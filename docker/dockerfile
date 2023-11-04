@@ -11,11 +11,11 @@ SHELL ["/bin/bash", "-c"]
 
 # Install basic apt packages
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    git vim iputils-ping python3-pip ros-${ROS_DISTRO}-xacro \
-    ros-${ROS_DISTRO}-twist-mux ros-${ROS_DISTRO}-ros2-controllers \
-    ros-${ROS_DISTRO}-gazebo-ros2-control ros-humble-slam-toolbox \
-    ros-${ROS_DISTRO}-ros2-control ros-${ROS_DISTRO}-gazebo-ros-pkgs \
-    ros-${ROS_DISTRO}-navigation2 ros-${ROS_DISTRO}-nav2-bringup ros-${ROS_DISTRO}-turtlebot3*  
+    git vim iputils-ping python3-pip ros-${ROS_DISTRO}-xacro 
+#    ros-${ROS_DISTRO}-twist-mux ros-${ROS_DISTRO}-ros2-controllers \
+    #ros-${ROS_DISTRO}-gazebo-ros2-control ros-humble-slam-toolbox \
+    #ros-${ROS_DISTRO}-ros2-control ros-${ROS_DISTRO}-gazebo-ros-pkgs \
+    #ros-${ROS_DISTRO}-navigation2 ros-${ROS_DISTRO}-nav2-bringup ros-${ROS_DISTRO}-turtlebot3*  
     #joystick jstest-gtk evtest \
 
 # Install additional Python modules
@@ -37,8 +37,14 @@ WORKDIR /underlay_ws
 RUN source /opt/ros/${ROS_DISTRO}/setup.bash \
  && apt-get update -y \
  && rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
+ #&& source /opt/ros/foxy/setup.bash \
+ #&& colcon build --packages-select libsick_ldmrs --event-handlers console_direct+ \
+ #&& source ./install/setup.bash \
+ #&& colcon build --packages-select msgpack11 --cmake-args " -DMSGPACK11_BUILD_TESTS=0" --event-handlers console_direct+ \
+ #&& source ./install/setup.bash \
+ #&& colcon build --packages-select sick_scan_xd --cmake-args " -DROS_VERSION=2" " -DLDMRS=0" --event-handlers console_direct+ \
+ #&& source ./install/setup.bash \
  && colcon build --symlink-install
-ENV TURTLEBOT3_MODEL=waffle_pi
 
 # Download Groot2 AppImage and place it in the home folder.
 WORKDIR /root/
@@ -85,7 +91,8 @@ ARG GID=${UID}
 
 # Install extra tools for development
 RUN apt-get update && apt-get install -y --no-install-recommends \
- gdb gdbserver nano ros-${ROS_DISTRO}-joint-state-publisher-gui python3-serial python3-colcon-clean
+ gdb gdbserver nano ros-${ROS_DISTRO}-joint-state-publisher-gui python3-serial python3-colcon-clean \
+ net-tools
 
 # Create new user and home directory
 RUN groupadd --gid $GID $USERNAME \
@@ -98,11 +105,11 @@ RUN groupadd --gid $GID $USERNAME \
 # Set the ownership of the overlay workspace to the new user
 RUN chown -R ${UID}:${GID} /overlay_ws/
 
-# Move Groot2 to new user's home directory and ensure it can be run
-RUN groupadd fuse \
- && usermod -aG fuse ${USERNAME}
-RUN mv /root/Groot2.AppImage /home/${USERNAME} \ 
- && chown ${UID}:${GID} /home/${USERNAME}/Groot2.AppImage
+## Move Groot2 to new user's home directory and ensure it can be run
+#RUN groupadd fuse \
+ #&& usermod -aG fuse ${USERNAME}
+#RUN mv /root/Groot2.AppImage /home/${USERNAME} \ 
+ #&& chown ${UID}:${GID} /home/${USERNAME}/Groot2.AppImage
 
 # Set the user and source entrypoint in the user's .bashrc file
 USER ${USERNAME}

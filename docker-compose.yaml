@@ -50,7 +50,7 @@ services:
         - USERNAME=${USERNAME:-devuser}
     volumes:
       # Mount the source code
-      - ./tranbot_mk1:/overlay_ws/src/tranbot_mk1:rw
+      - ./mbzirc_lidar:/overlay_ws/src/mbzirc_lidar:rw
       # Mount colcon build artifacts for faster rebuilds
       - ./.colcon/build/:/overlay_ws/build/:rw
       - ./.colcon/install/:/overlay_ws/install/:rw
