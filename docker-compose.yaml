@@ -52,6 +52,7 @@ services:
       # Mount the source code
       - ./mbzirc_lidar:/overlay_ws/src/mbzirc_lidar:rw
       - ../lidar_plane_filtering:/overlay_ws/src/lidar_plane_filtering:rw
+      #- ../lidar_distortion_compensation:/overlay_ws/src/lidar_distortion_compensation:rw
       # Mount colcon build artifacts for faster rebuilds
       - ./.colcon/build/:/overlay_ws/build/:rw
       - ./.colcon/install/:/overlay_ws/install/:rw
