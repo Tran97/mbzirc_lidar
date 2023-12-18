@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ros-${ROS_DISTRO}-tf-transformations \
     ros-${ROS_DISTRO}-imu-tools \
     ros-${ROS_DISTRO}-common-interfaces \
-    ros-${ROS_DISTRO}-tf2-sensor-msgs
+    ros-${ROS_DISTRO}-tf2-sensor-msgs \
+    ros-${ROS_DISTRO}-diagnostic-updater ros-${ROS_DISTRO}-diagnostic-msgs
 
 # Install additional Python modules
 RUN pip3 install matplotlib transforms3d
@@ -70,7 +71,7 @@ FROM base AS overlay
 # Create an overlay Colcon workspace
 RUN mkdir -p /overlay_ws/src
 WORKDIR /overlay_ws
-#COPY ./tranbot_mk1/ ./src/tranbot_mk1/
+COPY ./mbzirc_lidar/ ./src/mbzirc_lidar/
 RUN source /underlay_ws/install/setup.bash \
  && rosdep install --from-paths src --ignore-src --rosdistro ${ROS_DISTRO} -y \
  && colcon build --symlink-install

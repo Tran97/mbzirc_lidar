@@ -59,10 +59,23 @@ services:
     user: ${USERNAME:-devuser}
     command: sleep infinity
 
-  ## Runs basic simulation
-  #sim:
-     #extends: dev
-     #command: ros2 launch tranbot_worlds tranbot_world.launch.py
+  ## Launches lidar container
+  start_lidar_base:
+     extends: dev
+     environment:
+      - HOSTNAME=192.168.1.10
+      - UDP_RECEIVER=192.168.1.1
+     command:
+      - src/mbzirc_lidar/./start_lidar_cycle.sh
+
+  ## Launches lidar container with in dev mode
+  start_lidar_dev:
+     extends: dev
+     environment:
+      - HOSTNAME=192.168.1.10
+      - UDP_RECEIVER=192.168.1.1
+     command:
+      - src/mbzirc_lidar/./start_lidar_cycle.sh
 
   ## Demo world
   #demo-world:
