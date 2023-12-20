@@ -50,9 +50,8 @@ services:
         - USERNAME=${USERNAME:-devuser}
     volumes:
       # Mount the source code
-      - ./mbzirc_lidar:/overlay_ws/src/mbzirc_lidar:rw
-      - ../lidar_plane_filtering:/overlay_ws/src/lidar_plane_filtering:rw
-      #- ../lidar_distortion_compensation:/overlay_ws/src/lidar_distortion_compensation:rw
+      - ./lidar_plane_filtering:/overlay_ws/src/lidar_plane_filtering:rw
+
       # Mount colcon build artifacts for faster rebuilds
       - ./.colcon/build/:/overlay_ws/build/:rw
       - ./.colcon/install/:/overlay_ws/install/:rw
@@ -60,13 +59,22 @@ services:
     user: ${USERNAME:-devuser}
     command: sleep infinity
 
-  ## Runs basic simulation
-  #sim:
-     #extends: dev
-     #command: ros2 launch tranbot_worlds tranbot_world.launch.py
+  ## Launches lidar container
+  sick_lidar:
+     extends: dev
+     environment:
+      - HOSTNAME=192.168.1.10
+      - UDP_RECEIVER=192.168.1.1
+     command: ros2 launch lidar_plane_filtering sick_multiscan.launch.py hostname:=192.168.1.10 udp_receiver_ip:=192.168.1.1 
+      #- src/start_lidar_cycle.sh
 
-  ## Demo world
-  #demo-world:
-     #extends: dev 
-     #command: ros2 launch tranbot_spinup sim.launch.py
+  ## Launches the filtering algorithm
+  plane_filter:
+     extends: overlay
+     command:  ros2 launch lidar_plane_filtering sensor_stack.launch.py
+
+  ## Launches visualization
+  viz:
+     extends: dev
+     command: rviz2 -d /overlay_ws/src/lidar_plane_filtering/config/sensor_stack.rviz
     
